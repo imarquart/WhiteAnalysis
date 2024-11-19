@@ -2,7 +2,7 @@ import json
 import os
 import time
 from io import BytesIO
-from typing import Dict, List, Optional
+from typing import Dict, List
 
 import structlog
 import tenacity
@@ -152,7 +152,7 @@ def run_batched_prompts(
 def process_document(
     filename: str,
     cases: Dict[str, str],
-    encodings: Optional[tiktoken.Encoding],
+    encodings: tiktoken.Encoding,
     model: str,
     output_folder: str,
 ) -> None:
@@ -182,7 +182,7 @@ def process_document(
             pages = [
                 PDFDocument(
                     page=i + 1,
-                    text=unst_page,
+                    text=unst_page.text,
                     filename=filename,
                 )
                 for i, unst_page in enumerate(unst_pages)
