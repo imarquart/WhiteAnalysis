@@ -14,7 +14,7 @@ Automated analysis tool for HC White's work using AI models.
 uv venv
 source .venv/bin/activate  # Linux/Mac
 .venv\Scripts\activate     # Windows
-uv pip install -r requirements.txt
+uv sync
 ```
 
 Set your OpenAI API key:
