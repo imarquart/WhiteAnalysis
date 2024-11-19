@@ -1,0 +1,10 @@
+
+.DS_Store
+.env
+*.pyc
+__pycache__/
+cases/
+documents/
+output/
+*ipynb
+/test_output

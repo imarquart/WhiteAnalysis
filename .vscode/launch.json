@@ -1,0 +1,34 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: Analysis",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/whiteanalysis/main.py",
+            "args": [
+                "--document-folder",
+                "documents",
+                "--output-folder",
+                "test_output",
+                "--model",
+                "gpt-4o-mini",
+                "--inputs",
+                "inputs/cases.json"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
+    ]
+}
