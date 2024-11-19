@@ -48,7 +48,3 @@ Install dev dependencies:
 uv pip install -e ".[dev]"
 pre-commit install
 ```
-
-## License
-
-[Insert your license choice]
