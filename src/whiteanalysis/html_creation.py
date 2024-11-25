@@ -103,7 +103,6 @@ def generate_insights_report(
             <div class="meta-info">
                 <p><strong>Source File:</strong> {html.escape(filename)}</p>
                 <p><strong>Model:</strong> {html.escape(model)}</p>
-                <p><strong>Case Description:</strong> {html.escape(case)}</p>
             </div>
         </div>
     """
@@ -129,6 +128,7 @@ def generate_insights_report(
                 <p><strong>{html.escape(quote.text)}</strong> </p>
                 <div class="quote-context">{html.escape(quote.context)}</div>
                 <div class="quote-position"><strong>Position:</strong> {html.escape(quote.position)}</div>
+                <div class="quote-issue_in_draft"><strong>Issue in Draft:</strong> {html.escape(quote.issue_in_draft if hasattr(quote, 'issue_in_draft') else "")}</div>
                 <div class="quote-relation">
                     <strong>Relevance:</strong> {html.escape(quote.relation)}
                 </div>

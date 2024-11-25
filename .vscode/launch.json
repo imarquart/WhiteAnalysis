@@ -30,5 +30,24 @@
             "console": "integratedTerminal",
             "cwd": "${workspaceFolder}"
         },
+        {
+            "name": "Python: Paper",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/whiteanalysis/main.py",
+            "args": [
+                "--document-folder",
+                "Materials",
+                "--output-folder",
+                "paper_output",
+                "--model",
+                "gpt-4o-mini",
+                "--inputs",
+                "inputs/paper.json"
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}"
+        },
     ]
 }

@@ -15,6 +15,69 @@ def generate_word_report(
     output_path: str = "insights_report.docx",
 ):
     """
+    Generate a minimally formatted Word document report from a list of Insights objects.
+    Focuses on clear presentation of quotes for easy copying.
+
+    Args:
+        responses: List of Insights objects
+        filename: Source filename
+        case: Case description
+        model: Model name
+        output_path: Path where the Word file will be saved
+    """
+    doc = Document()
+    # Set up default font
+    style = doc.styles["Normal"]
+    style.font.name = "Calibri"
+    style.font.size = Pt(11)
+
+    # Header information in plain text
+    doc.add_paragraph("CASES AND QUOTES")
+    doc.add_paragraph(f"Source File: {filename}")
+    doc.add_paragraph(f"Model: {model}")
+    doc.add_paragraph("---")  # Simple separator
+
+    # Process each insight
+    for i, insight in enumerate(responses, 1):
+        # Insight header
+        doc.add_paragraph(f"\nINSIGHT SET {i}")
+
+        # Context section
+        doc.add_paragraph("GENERAL CONTEXT:")
+        doc.add_paragraph(insight.general_context)
+        doc.add_paragraph("RELEVANCE:")
+        doc.add_paragraph(insight.general_relation)
+
+        # Quotes section
+        doc.add_paragraph("\nEXTRACTED QUOTES:")
+
+        # Process each quote
+        for j, quote in enumerate(insight.quotes, 1):
+            # Add quote with clear separation
+            doc.add_paragraph(f"\nQUOTE {j}:")
+            doc.add_paragraph(f"Text: {quote.text}")
+            doc.add_paragraph(f"Context: {quote.context}")
+            doc.add_paragraph(f"Position: {quote.position}")
+            doc.add_paragraph(
+                f"Argument in draft: {quote.issue_in_draft if hasattr(quote, 'issue_in_draft') else ''}"
+            )
+            doc.add_paragraph(f"Relevance: {quote.relation}")
+
+        doc.add_paragraph("\n" + "-" * 40)  # Section separator
+
+    # Save the document
+    doc.save(output_path)
+    return output_path
+
+
+def generate_word_report_pretty(
+    responses: List[Insights],
+    filename: str,
+    case: str,
+    model: str,
+    output_path: str = "insights_report.docx",
+):
+    """
     Generate a Word document report from a list of Insights objects.
 
     Args:

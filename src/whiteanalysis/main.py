@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import time
 from io import BytesIO
 from typing import Dict, List
@@ -11,6 +12,7 @@ import typer
 from tqdm.auto import tqdm
 
 from whiteanalysis.html_creation import generate_insights_report
+from whiteanalysis.paper import py_cases
 from whiteanalysis.pdf_handling import (
     PDFDocument,
     get_content_from_pdf,
@@ -26,6 +28,32 @@ from whiteanalysis.word_creation import generate_word_report
 
 app = typer.Typer()
 logger = structlog.get_logger()
+
+
+def clean_json_string(text):
+    """
+    Clean a JSON string by:
+    1. Replacing curly quotes with straight quotes
+    2. Removing invisible characters
+    3. Escaping line breaks
+    4. Escaping backslashes
+    """
+    # Replace curly quotes with straight quotes
+    text = text.replace('"', '"').replace('"', '"')
+
+    # Remove invisible characters and other problematic Unicode
+    text = re.sub(r"[\x00-\x1F\x7F-\x9F]", "", text)
+
+    # Replace multiple spaces with single space
+    text = re.sub(r"\s+", " ", text)
+
+    # Escape backslashes
+    text = text.replace("\\", "\\\\")
+
+    # Escape line breaks
+    text = text.replace("\n", "\\n")
+
+    return text
 
 
 @tenacity.retry(
@@ -54,7 +82,9 @@ def run_full_page(
     responses = []
 
     try:
-        full_page_prompts = create_full_paper_prompts(pages, case_text)
+        full_page_prompts = create_full_paper_prompts(
+            pages, case_text, encodings=encodings
+        )
         token_count = sum(
             len(encodings.encode(x["content"])) for x in full_page_prompts
         )
@@ -250,7 +280,11 @@ def run_analysis(
         ]
 
         with open(inputs, "r", encoding="utf-8") as f:
-            cases = json.load(f)
+            try:
+                cleaned = clean_json_string(f.read())
+                cases = json.loads(cleaned)
+            except Exception:
+                cases = py_cases
 
         try:
             encodings = tiktoken.encoding_for_model(model)
