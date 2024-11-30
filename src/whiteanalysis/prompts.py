@@ -63,7 +63,9 @@ class Insights(BaseModel):
 
     You must find insights that support the arguments made in the draft, and add
     further insights to offer new arguments, sharpen ones, or better represent White's work.
-    Be precise in how you refer to either source or draft, but try to provide as many insights as you can."""
+    Be precise in how you refer to either source or draft, but try to provide as many insights as you can.
+
+    If there are too many quotes, extract the most relevant and high-quality ones."""
 
     general_context: str = Field(..., title="General context in the source document")
     general_relation: str = Field(

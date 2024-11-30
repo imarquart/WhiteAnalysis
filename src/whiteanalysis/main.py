@@ -11,13 +11,13 @@ import tiktoken
 import typer
 from tqdm.auto import tqdm
 
-from whiteanalysis.html_creation import generate_insights_report
-from whiteanalysis.paper import py_cases
-from whiteanalysis.pdf_handling import (
+from whiteanalysis.file_handling import (
     PDFDocument,
     get_content_from_pdf,
     get_content_from_unstructured,
 )
+from whiteanalysis.html_creation import generate_insights_report
+from whiteanalysis.paper import py_cases
 from whiteanalysis.prompts import (
     Insights,
     create_batched_prompts,
