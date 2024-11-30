@@ -10,21 +10,21 @@ logger = structlog.get_logger()
 
 
 class Quote(BaseModel):
-    """Extract quotes using this tool, ensuring verbatim and correct referencing so
+    """Extract quotes from SOURCE using this tool, ensuring verbatim and correct referencing so
     the scientific process is in order.
 
-    Make sure to relate the quote to a specific argument and line in the draft.
+    Make sure to relate the quote to a specific argument and line in the DRAFT.
     Make sure to give the text of the quote verbatim."""
 
-    context: str = Field(..., title="Context of the quote within the document.")
+    context: str = Field(..., title="Context of the quote within the SOURCE document.")
     position: str = Field(
         ...,
-        title="Where the quote is located in the source (if given). Example: Page 3, Paragraph 2 or Page 5, Line 4, or Page 4, Middle",
+        title="Where the quote is located in the SOURCE (if given). Example: Page 3, Paragraph 2 or Page 5, Line 4, or Page 4, Middle",
     )
-    text: str = Field(..., title="Verbatim text of the quote")
+    text: str = Field(..., title="Verbatim text of the quote from SOURCE")
     issue_in_draft: str = Field(
         ...,
-        description="The exact argument in the draft that the quote might help support. Try to focus on a precise point in the text and give some verbatim quote so we can find it.",
+        description="The exact argument in the DRAFT that the quote might help support. Try to focus on a precise point in the text and give some verbatim quote so we can find it.",
     )
     relation: str = Field(
         ...,
@@ -33,7 +33,7 @@ class Quote(BaseModel):
 
 
 class Quote_case(BaseModel):
-    """Extract quotes address the issue.
+    """Extract quotes from SOURCE address the issue.
     Make sure to relate the quote to the issues's context.
     Make sure to copy the text of the quote verbatim."""
 
@@ -50,14 +50,14 @@ class Quote_case(BaseModel):
 
 
 class Insights(BaseModel):
-    """Given a a draft and a scientific source document, use this tool to extract insights in forms of quotes
-    that support the arguments presented and hence help a hypothetical person address the given issue presented in the draft.
+    """Given a a DRAFT and a scientific SOURCE document, use this tool to extract insights from SOURCE in forms of quotes
+    that support the arguments presented in DRAFT and hence help a hypothetical person address the given issue presented in the draft.
 
     The scientific source documents treat social relationships and social structure on
     a scientific level. The source might describe mechanisms, patterns or action
     either on an abstract level or in a specific context.
 
-    The draft is for an article giving insights and guidance based
+    The DRAFT is for an article giving insights and guidance based
     on the works of HC White, the source documents' author. Therefore, you might need to translate
     the insights of White to the draft's arguments.
 
@@ -117,12 +117,12 @@ If there are no insights, you can leave the fields empty.\n\n""",
 system_prompt = [
     {
         "content": """\
-You are given the draft of an academic paper that
+You are given the draft of an academic paper under <DRAFT> tags, as well as an academic
+paper from HC WHite under <SOURCE> tags. The draft 
 makes an argument for using the academic work of the late HC White, our co-author, in a business context.
-Your task is to extract insights to support the existing arguments in the paper.
+Your task is to extract insights to support the existing arguments in the DRAFT.
 You can also extract insights to offer new perspectives or arguments we might have missed.
-Use the provided tools to do so.
-If there are no insights, you can leave the fields empty.\n\n""",
+Use the provided tools to do so.\n\n""",
         "role": "system",
     }
 ]
@@ -199,12 +199,12 @@ def create_batched_prompts(pages: list[PDFDocument], issue, page_batch_size, enc
             )
             prompts = deepcopy(system_prompt)
             prompts.append(
-                {"content": "<DRAFT> \n" + issue + "</DRAFT>\n", "role": "user"}
+                {"content": "<DRAFT> \n" + issue + "</DRAFT>\n", "role": "system"}
             )
             prompts.append(
                 {
-                    "content": "<CONTEXT> \n" + current_context + "</CONTEXT>\n",
-                    "role": "system",
+                    "content": "<SOURCE> \n" + current_context + "</SOURCE>\n",
+                    "role": "user",
                 }
             )
             prompts_list.append(prompts)
@@ -218,9 +218,9 @@ def create_full_paper_prompts(pages, issue, encodings):
     """Creates prompts with the full paper as context."""
     logger.debug(f"System prompts tokens {return_system_tokens(issue,encodings)}")
     prompts = deepcopy(system_prompt)
-    prompts.append({"content": "<DRAFT> \n" + issue + "</DRAFT>\n", "role": "user"})
-    for page in pages:
+    prompts.append({"content": "<DRAFT> \n" + issue + "</DRAFT>\n", "role": "system"})
+    for k, page in enumerate(pages):
         prompts.append(
-            {"content": "<PAGE> \n" + page.text + "</PAGE>\n", "role": "system"}
+            {"content": f"<PAGE page={k}> \n" + page.text + "</PAGE>\n", "role": "user"}
         )
     return prompts

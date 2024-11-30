@@ -263,6 +263,7 @@ def run_analysis(
     output_folder: str = "output",
     inputs: str = "inputs/cases.json",
     model: str = "gpt-4o-mini",
+    add_timestamp: bool = True,
 ) -> None:
     """Run analysis on a folder of documents.
 
@@ -285,6 +286,9 @@ def run_analysis(
                 cases = json.loads(cleaned)
             except Exception:
                 cases = py_cases
+
+        if add_timestamp:
+            output_folder = os.path.join(output_folder, time.strftime("%y%m%d%M"))
 
         try:
             encodings = tiktoken.encoding_for_model(model)
