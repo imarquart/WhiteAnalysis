@@ -61,7 +61,10 @@ def get_content_from_unstructured(filename: str) -> list[PDFDocument]:
 
 
 def get_content_from_docx(
-    file: BytesIO, filename: str, encodings: tiktoken.Encoding, tokens_per_page: int
+    file: BytesIO,
+    filename: str,
+    encodings: tiktoken.Encoding,
+    tokens_per_page: int = 1000,
 ) -> list[PDFDocument]:
     """Extracts text from a DOCX file and splits it into pages based on token count.
 
