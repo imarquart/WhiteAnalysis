@@ -4,7 +4,7 @@ import structlog
 import tiktoken
 from pydantic import BaseModel, Field
 
-from whiteanalysis.pdf_handling import PDFDocument
+from whiteanalysis.file_handling import PDFDocument
 
 logger = structlog.get_logger()
 

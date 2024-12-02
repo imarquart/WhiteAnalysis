@@ -14,12 +14,13 @@ dependencies = [
     "pypdf>=5.1.0",
     "python-docx>=1.1.2",
     "python-dotenv>=1.0.1",
+    "rocketpdf",
     "ruff>=0.7.3",
     "structlog>=24.4.0",
     "tenacity>=9.0.0",
     "tiktoken>=0.8.0",
     "tqdm>=4.67.0",
-    "typer>=0.13.0",
+    "typer",
     "unstructured[pdf] >= 0.16.5",
 ]
 

@@ -12,6 +12,9 @@ class PDFDocument(BaseModel):
     page: int
     text: str
 
+    def __str__(self) -> str:
+        return f"<PAGE>{self.filename} - Page {self.page + 1} \n {self.text}\n</PAGE>"
+
 
 def get_content_from_pdf(file: BytesIO, filename: str) -> list[PDFDocument]:
     """Loads a PDF file into a list of Document objects.
