@@ -13,6 +13,7 @@ from tqdm.auto import tqdm
 
 from whiteanalysis.file_handling import (
     PDFDocument,
+    get_content_from_docx,
     get_content_from_pdf,
     get_content_from_unstructured,
 )
@@ -185,6 +186,7 @@ def process_document(
     encodings: tiktoken.Encoding,
     model: str,
     output_folder: str,
+    add_subfolder: bool = False,
 ) -> None:
     """Process a single document file.
 
@@ -194,6 +196,7 @@ def process_document(
         encodings: Optional tokenizer encoding
         model: Model identifier to use
         output_folder: Base output folder path
+        add_subfolder: Flag to add a subfolder for each document
     """
     logger.debug(f"Processing file: {filename}")
 
@@ -201,10 +204,16 @@ def process_document(
         with open(filename, "rb") as file:
             fileio = BytesIO(file.read())
 
-        pages = get_content_from_pdf(fileio, filename)
+        if filename.lower().endswith(".docx"):
+            logger.debug(f"Extracting content from DOCX: {filename}")
+            pages = get_content_from_docx(fileio, filename, encodings)
+        else:
+            logger.debug(f"Extracting content from PDF: {filename}")
+            pages = get_content_from_pdf(fileio, filename)
         total_length = (
             sum(len(encodings.encode(x.text)) for x in pages) if encodings else 0
         )
+        logger.debug(f"Total tokens in document: {total_length}")
 
         if total_length <= 100:
             logger.debug(f"Using unstructured extraction for {filename}")
@@ -219,7 +228,10 @@ def process_document(
             ]
 
         file_base = os.path.splitext(os.path.basename(filename))[0].replace(" ", "")
-        folder = os.path.join(output_folder, model, file_base)
+        if add_subfolder:
+            folder = os.path.join(output_folder, file_base)
+        else:
+            folder = output_folder
         os.makedirs(folder, exist_ok=True)
 
         for case_name, case_text in tqdm(
@@ -264,6 +276,7 @@ def run_analysis(
     inputs: str = "inputs/cases.json",
     model: str = "gpt-4o-mini",
     add_timestamp: bool = True,
+    add_subfolder: bool = False,
 ) -> None:
     """Run analysis on a folder of documents.
 
@@ -277,7 +290,7 @@ def run_analysis(
         filenames = [
             os.path.join(document_folder, x)
             for x in os.listdir(document_folder)
-            if x.lower().endswith(".pdf")
+            if x.lower().endswith(".pdf") or x.lower().endswith(".docx")
         ]
 
         with open(inputs, "r", encoding="utf-8") as f:
@@ -298,7 +311,9 @@ def run_analysis(
 
         with tqdm(filenames, desc="Processing files", unit="file", leave=True) as pbar:
             for filename in pbar:
-                process_document(filename, cases, encodings, model, output_folder)
+                process_document(
+                    filename, cases, encodings, model, output_folder, add_subfolder
+                )
 
         logger.info("Analysis complete")
 

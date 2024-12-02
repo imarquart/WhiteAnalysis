@@ -213,6 +213,20 @@ def create_batched_prompts(pages: list[PDFDocument], issue, page_batch_size, enc
             current_context = page.text
         else:
             current_context += page.text
+            # Add the last batch if there is any remaining context
+    if current_context:
+        prompts = deepcopy(system_prompt)
+        prompts.append(
+            {"content": "<DRAFT> \n" + issue + "</DRAFT>\n", "role": "system"}
+        )
+        prompts.append(
+            {
+                "content": "<SOURCE> \n" + current_context + "</SOURCE>\n",
+                "role": "user",
+            }
+        )
+        prompts_list.append(prompts)
+
     return prompts_list
 
 

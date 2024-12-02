@@ -37,7 +37,7 @@
             "program": "${workspaceFolder}/src/whiteanalysis/main.py",
             "args": [
                 "--document-folder",
-                "Materials",
+                "Materials/book-20241126",
                 "--output-folder",
                 "paper_output",
                 "--model",
